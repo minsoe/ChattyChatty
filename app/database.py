@@ -1,5 +1,5 @@
 import os
-from typing import Type
+from typing import Type, Optional
 from beanie import init_beanie
 from bson import ObjectId
 
@@ -12,8 +12,8 @@ async def init_mongodb():
     await init_beanie(db, document_models=[Type[Conversation]])
 
 
-async def find_conversation_by_id(conversation_id: str) -> Conversation:
+async def find_conversation_by_id(conversation_id: Optional[str]) -> Optional[Conversation]:
     conversation = await Conversation.get(ObjectId(conversation_id))
     if conversation:
         return conversation
-    return Conversation()
+    return None
