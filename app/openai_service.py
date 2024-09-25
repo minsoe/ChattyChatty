@@ -1,6 +1,5 @@
 from typing import Optional
 from openai import OpenAI
-from app.database import find_conversation_by_id
 from app.models import Conversation
 
 
@@ -9,8 +8,7 @@ class OpenAIService:
     def __init__(self):
         self.client = OpenAI()
 
-    async def send(self, prompt: str, conversation_id: Optional[str] = None):
-        conversation = await find_conversation_by_id(conversation_id)
+    async def send(self, prompt: str, conversation: Optional[Conversation] = None):
         create = 0
         if conversation is None:
             create = 1
@@ -31,5 +29,5 @@ class OpenAIService:
             await conversation.insert()
         else:
             await conversation.save()
-        return system_message
+        return conversation
 
