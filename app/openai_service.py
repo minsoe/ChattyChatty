@@ -1,20 +1,17 @@
+from typing import Optional
+
 from openai import OpenAI
-from bson import ObjectId
-from app.models import Conversation
+
+from app.database import find_conversation_by_id
+
 
 class OpenAIService:
 
     def __init__(self):
         self.client = OpenAI()
 
-    async def find_conversation_by_id(self, conversation_id: str) -> Conversation:
-        conversation = await Conversation.get(ObjectId(conversation_id))
-        if conversation:
-            return conversation
-        return Conversation()
-
-    async def send(self, conversation_id: str, prompt: str):
-        conversation = await self.find_conversation_by_id(conversation_id)
+    async def send(self, prompt: str, conversation_id: Optional[str] = None):
+        conversation = await find_conversation_by_id(conversation_id)
         conversation.messages.append(
             {
                 "role": "user",
