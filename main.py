@@ -1,6 +1,5 @@
 from dotenv import load_dotenv
-
-from app.openai_service import init_mongodb
+from app.database import init_mongodb
 
 load_dotenv()
 
