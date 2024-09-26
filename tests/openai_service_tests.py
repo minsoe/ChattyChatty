@@ -1,16 +1,15 @@
 import unittest
+from unittest.mock import AsyncMock, MagicMock
 
-from unittest.mock import patch, AsyncMock
-
-from app.database.conversation_manager import ConversationManager
-from app.open_ai.openai_service import OpenAIService
 from app.database.models import Conversation
+from app.open_ai.openai_service import OpenAIService
+
 
 class OpenAIServieTests(unittest.IsolatedAsyncioTestCase):
+    mocked_response = "Mocked response"
 
-    @patch('app.openai_service.OpenAI')
-    async def test_send_message(self, mock_ai):
-        mocked_manager = AsyncMock(ConversationManager)
+    def mock_manager(self):
+        mocked_manager = AsyncMock()
         mocked_conversation = AsyncMock(Conversation)
         mocked_conversation.messages = [
             {
@@ -19,20 +18,25 @@ class OpenAIServieTests(unittest.IsolatedAsyncioTestCase):
             }
         ]
         mocked_manager.get_conversation.return_value = mocked_conversation
+        return mocked_manager
 
-        mocked_message = "Mocked response"
-        mock_response = AsyncMock()
-        mock_response.choices[0].message.content = mocked_message
+    def mock_client(self):
+        mock_response = MagicMock()
+        mock_response.choices[0].message.content = self.mocked_response
 
-        mocked_client = mock_ai.return_value
+        mocked_client = MagicMock()
         mocked_client.chat.completions.create.return_value = mock_response
+        return mocked_client
 
-        service = OpenAIService()
-        conversation = await service.send(prompt="Test", manager=mocked_manager)
+    async def test_send_message(self):
+        mocked_manager = self.mock_manager()
+        service = OpenAIService(self.mock_client(), mocked_manager)
+        conversation = await service.send(prompt="Test")
 
         self.assertEqual(3, len(conversation.messages))
         mocked_manager.get_conversation.assert_called_once()
         mocked_manager.save.assert_called_once()
+
 
 if __name__ == '__main__':
     unittest.main()

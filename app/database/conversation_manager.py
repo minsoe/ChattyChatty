@@ -1,7 +1,7 @@
 from app.database.models import Conversation
 
-class ConversationManager:
 
+class ConversationManager:
     async def get_conversation(self) -> Conversation:
         conversation = await Conversation.find_one()
         if conversation is None:

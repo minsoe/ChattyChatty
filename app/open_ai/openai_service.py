@@ -6,11 +6,12 @@ from app.database.models import Conversation
 
 class OpenAIService:
 
-    def __init__(self):
-        self.client = OpenAI()
+    def __init__(self, client: OpenAI, manager: ConversationManager):
+        self.client = client
+        self.manager = manager
 
-    async def send(self, prompt: str, manager: ConversationManager = ConversationManager) -> Conversation:
-        conversation = await manager.get_conversation()
+    async def send(self, prompt: str) -> Conversation:
+        conversation = await self.manager.get_conversation()
 
         conversation.messages.append(
             {
@@ -31,6 +32,5 @@ class OpenAIService:
             }
         )
 
-        await manager.save(conversation)
+        await self.manager.save(conversation)
         return conversation
-

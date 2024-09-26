@@ -1,8 +1,10 @@
 import os
 
 from beanie import init_beanie
-from app.database.models import Conversation
 from motor.motor_asyncio import AsyncIOMotorClient
+
+from app.database.models import Conversation
+
 
 async def init_mongodb():
     motor_client = AsyncIOMotorClient(os.getenv('MONGODB_URL'))

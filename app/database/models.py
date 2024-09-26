@@ -9,6 +9,7 @@ class Message(BaseModel):
     role: str
     content: str
 
+
 class Conversation(Document):
     created_at: datetime = Field(default_factory=datetime.now)
     messages: List = Field(default_factory=lambda: [
@@ -17,6 +18,3 @@ class Conversation(Document):
             "content": "Welcome"
         }
     ])
-
-
-

@@ -1,6 +1,8 @@
 import unittest
 from unittest.mock import AsyncMock, MagicMock
 
+import pytest
+
 from app.database.conversation_manager import ConversationManager
 from app.database.models import Conversation
 
@@ -48,7 +50,6 @@ class ConversationManagerTests(unittest.IsolatedAsyncioTestCase):
         await manager.delete_conversation()
 
         Conversation.delete_all.assert_called_once()
-
 
 
 if __name__ == '__main__':
