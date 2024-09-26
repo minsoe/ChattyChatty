@@ -1,4 +1,4 @@
-from app.models import Conversation
+from app.database.models import Conversation
 
 class ConversationManager:
 

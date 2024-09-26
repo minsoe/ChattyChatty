@@ -1,8 +1,9 @@
-from beanie import Document
-from pydantic import Field, UUID1, BaseModel
 from datetime import datetime
-from typing import List, Optional
-from bson import ObjectId
+from typing import List
+
+from beanie import Document
+from pydantic import Field, BaseModel
+
 
 class Message(BaseModel):
     role: str

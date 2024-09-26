@@ -1,16 +1,10 @@
 import unittest
-from pyexpat.errors import messages
 
-from unittest.mock import patch, MagicMock, AsyncMock
+from unittest.mock import patch, AsyncMock
 
-from beanie import init_beanie
-from dotenv import load_dotenv
-from motor.motor_asyncio import AsyncIOMotorClient
-
-from app.database import init_mongodb
-from app.conversation_manager import ConversationManager
-from app.openai_service import OpenAIService
-from app.models import Conversation
+from app.database.conversation_manager import ConversationManager
+from app.open_ai.openai_service import OpenAIService
+from app.database.models import Conversation
 
 class OpenAIServieTests(unittest.IsolatedAsyncioTestCase):
 

@@ -1,13 +1,11 @@
 import unittest
 from unittest.mock import AsyncMock, MagicMock
 
-from beanie.odm.interfaces.find import FindInterface
-
-from app.conversation_manager import ConversationManager
-from app.models import Conversation
+from app.database.conversation_manager import ConversationManager
+from app.database.models import Conversation
 
 
-class MyTestCase(unittest.IsolatedAsyncioTestCase):
+class ConversationManagerTests(unittest.IsolatedAsyncioTestCase):
 
     async def test_get_conversation_when_no_existing_converstation(self):
         find_one = AsyncMock()

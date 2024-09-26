@@ -1,8 +1,7 @@
-from typing import Optional
 from openai import OpenAI
 
-from app.conversation_manager import ConversationManager
-from app.models import Conversation, Message
+from app.database.conversation_manager import ConversationManager
+from app.database.models import Conversation
 
 
 class OpenAIService:
