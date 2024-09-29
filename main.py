@@ -10,16 +10,18 @@ from app.database.database import init_mongodb
 from app.open_ai.openai_service import OpenAIService
 
 
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
+async def bootstrap():
     load_dotenv()
     await init_mongodb()
 
     manager = ConversationManager()
     ai_service = OpenAIService(OpenAI(), manager)
     init_conversation_router(app, manager, ai_service)
-    yield
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await bootstrap()
+    yield
 
 app = FastAPI(lifespan=lifespan)

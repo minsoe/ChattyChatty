@@ -14,7 +14,8 @@ def init_conversation_router(api: FastAPI, manager: ConversationManager,
         """
         Send a message to start or continue the conversation with AI
         """
-        await ai_service.send(prompt.message)
+        message = await ai_service.send(prompt.message)
+        return message
 
     @router.delete("/conversation")
     async def delete_conversation():

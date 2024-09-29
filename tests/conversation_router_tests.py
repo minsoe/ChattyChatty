@@ -11,13 +11,15 @@ class ConversationRouterTests(unittest.TestCase):
 
     def mock_manager(self):
         manager = MagicMock()
-        manager.get_conversation = AsyncMock(return_value=MagicMock(messages=["message1", "message2"]))
+        manager.get_conversation = AsyncMock(return_value=MagicMock(
+            messages=[{"role": "user", "content": "message1"}, {"role": "assistant", "content": "message2"}]))
         manager.delete_conversation = AsyncMock()
         return manager
 
     def mock_ai_service(self):
         ai_service = MagicMock()
         ai_service.send = AsyncMock()
+        ai_service.send.return_value = {"role": "assistant", "content": "message1"}
         return ai_service
 
     def client(self):
@@ -28,6 +30,7 @@ class ConversationRouterTests(unittest.TestCase):
     def test_send_conversation(self):
         response = self.client().post("/conversation", json={"message": "test prompt"})
         assert response.status_code == 200
+        assert response.json() == {"role": "assistant", "content": "message1"}
 
     def test_delete_conversation(self):
         response = self.client().delete("/conversation")
@@ -36,7 +39,8 @@ class ConversationRouterTests(unittest.TestCase):
     def test_get_conversations(self):
         response = self.client().get("/conversation")
         assert response.status_code == 200
-        assert response.json() == ["message1", "message2"]
+        assert response.json() == [{"role": "user", "content": "message1"},
+                                   {"role": "assistant", "content": "message2"}]
 
 
 if __name__ == '__main__':
