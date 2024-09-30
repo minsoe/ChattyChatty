@@ -1,7 +1,8 @@
 import unittest
-from unittest.mock import AsyncMock, MagicMock
+from typing import List
+from unittest.mock import AsyncMock, MagicMock, call
 
-from app.database.models import Conversation, Message
+from app.database.models import Conversation, Message, Role
 from app.open_ai.openai_service import OpenAIService
 
 
@@ -11,7 +12,7 @@ class OpenAIServieTests(unittest.IsolatedAsyncioTestCase):
     def mock_manager(self):
         mocked_manager = AsyncMock()
         mocked_conversation = AsyncMock(Conversation)
-        mocked_conversation.messages = [Message(role="system", content="Welcome")]
+        mocked_conversation.messages = []
         mocked_manager.get_conversation.return_value = mocked_conversation
         return mocked_manager
 
@@ -23,15 +24,28 @@ class OpenAIServieTests(unittest.IsolatedAsyncioTestCase):
         mocked_client.chat.completions.create.return_value = mock_response
         return mocked_client
 
-    async def test_send_message(self):
-        expected = Message(role="assistant", content=self.mocked_response)
-        mocked_manager = self.mock_manager()
-        service = OpenAIService(self.mock_client(), mocked_manager)
-        message = await service.send(prompt="Test")
+    def mock_conversation(self):
+        mocked_conversation = MagicMock(Conversation)
+        mocked_conversation.messages = MagicMock(List[Message])
+        append = MagicMock()
+        mocked_conversation.messages.append = append
+        return mocked_conversation
 
-        self.assertEqual(message, expected)
-        mocked_manager.get_conversation.assert_called_once()
-        mocked_manager.save.assert_called_once()
+    async def test_send_message(self):
+        expected = Message(role=Role.ASSISTANT, content=self.mocked_response)
+        mocked_manager = self.mock_manager()
+        mocked_conversation = self.mock_conversation()
+
+        service = OpenAIService(self.mock_client(), mocked_manager)
+        message = await service.send(prompt="Test", conversation=mocked_conversation)
+
+        assert message == expected
+
+        assert mocked_conversation.messages.append.has_calls([
+            call(Message(role=Role.USER, content="Test")),
+            call(Message(role=Role.ASSISTANT, content=self.mocked_response)),
+        ])
+        assert mocked_manager.save.called_once
 
 
 if __name__ == '__main__':
