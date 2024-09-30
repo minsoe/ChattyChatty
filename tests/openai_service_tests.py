@@ -35,12 +35,12 @@ class OpenAIServieTests(unittest.IsolatedAsyncioTestCase):
         expected = Message(role=Role.ASSISTANT, content=self.mocked_response)
         mocked_manager = self.mock_manager()
         mocked_conversation = self.mock_conversation()
+        mocked_client = self.mock_client()
 
-        service = OpenAIService(self.mock_client(), mocked_manager)
+        service = OpenAIService(mocked_client, mocked_manager)
         message = await service.send(prompt="Test", conversation=mocked_conversation)
 
         assert message == expected
-
         assert mocked_conversation.messages.append.has_calls([
             call(Message(role=Role.USER, content="Test")),
             call(Message(role=Role.ASSISTANT, content=self.mocked_response)),

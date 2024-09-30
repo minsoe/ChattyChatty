@@ -1,4 +1,5 @@
 import unittest
+from datetime import datetime
 from unittest.mock import AsyncMock, MagicMock
 
 from fastapi import FastAPI
@@ -32,16 +33,18 @@ class ConversationRouterTests(unittest.TestCase):
 
     def test_delete_conversation(self):
         mock_manager = self.mock_manager_with_get_conversation_return_value(MagicMock(Conversation))
-
         mock_manager.delete_conversation = AsyncMock()
+
         response = self.client(mock_manager, MagicMock()).delete("/conversations/123")
+
         assert response.status_code == 200
 
     def test_delete_conversation_when_not_found(self):
         mock_manager = self.mock_manager_with_get_conversation_return_value(None)
-
         mock_manager.delete_conversation = AsyncMock()
+
         response = self.client(mock_manager, MagicMock()).delete("/conversations/345")
+
         assert response.status_code == 404
 
     def test_get_conversation(self):
@@ -61,7 +64,9 @@ class ConversationRouterTests(unittest.TestCase):
     def test_post_conversation(self):
         mock_manager = self.mock_manager_with_get_conversation_return_value(MagicMock(Conversation))
         mock_ai_service = self.mock_ai_service()
+
         response = self.client(mock_manager, mock_ai_service).post("/conversations/123", json={"message": "test"})
+
         assert response.status_code == 200
         assert response.json() == {'role': 'assistant', 'content': 'Mocked Message'}
 
@@ -69,21 +74,40 @@ class ConversationRouterTests(unittest.TestCase):
         mock_manager = self.mock_manager_with_get_conversation_return_value(None)
 
         response = self.client(mock_manager, MagicMock()).post("/conversations/7891", json={"message": "test"})
+
         assert response.status_code == 404
 
     def test_get_conversations(self):
         mock_manager = MagicMock(ConversationManager)
         mock_manager.get_conversations_ids.return_value = ["123"]
+
         response = self.client(mock_manager, MagicMock()).get("/conversations")
+
         assert response.status_code == 200
         assert response.json() == {"conversation_id_list": ["123"]}
 
     def test_get_conversations_when_empty(self):
         mock_manager = MagicMock(ConversationManager)
         mock_manager.get_conversations_ids.return_value = []
+
         response = self.client(mock_manager, MagicMock()).get("/conversations")
+
         assert response.status_code == 200
         assert response.json() == {"conversation_id_list": []}
+
+    def test_put_conversation(self):
+        mock_manager = MagicMock(ConversationManager)
+        mocked_json = {
+            "id": "124",
+            "created_at": str(datetime.now()),
+            "messages": [{'content': 'Mocked', 'role': 'user'}]
+        }
+        mock_manager.create_conversation.return_value = mocked_json
+
+        response = self.client(mock_manager, self.mock_ai_service()).put("/conversations", json={"message": "test"})
+
+        assert response.status_code == 200
+        assert response.json() == mocked_json
 
 
 if __name__ == '__main__':
