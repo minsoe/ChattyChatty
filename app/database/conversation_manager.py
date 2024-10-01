@@ -18,8 +18,5 @@ class ConversationManager:
         await  conversation.save()
 
     async def create_conversation(self) -> Conversation:
-        conversation = await self._converstaion()
+        conversation = Conversation()
         return await Conversation.insert_one(conversation)
-
-    def _conversation(self):
-        return Conversation()

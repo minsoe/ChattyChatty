@@ -1,50 +1,32 @@
 import unittest
-from typing import List
-from unittest.mock import AsyncMock, MagicMock, call
+from unittest.mock import AsyncMock
 
+from app.database.conversation_manager import ConversationManager
 from app.database.models import Conversation, Message, Role
 from app.open_ai.openai_service import OpenAIService
+from tests.mocks.mock_ai import mock_ai
+from tests.mocks.mock_database import init_mock_database
 
 
 class OpenAIServieTests(unittest.IsolatedAsyncioTestCase):
-    mocked_response = "Mocked response"
 
-    def mock_manager(self):
-        mocked_manager = AsyncMock()
-        mocked_conversation = AsyncMock(Conversation)
-        mocked_conversation.messages = []
-        mocked_manager.get_conversation.return_value = mocked_conversation
-        return mocked_manager
-
-    def mock_client(self):
-        mock_response = MagicMock()
-        mock_response.choices[0].message.content = self.mocked_response
-
-        mocked_client = MagicMock()
-        mocked_client.chat.completions.create.return_value = mock_response
-        return mocked_client
-
-    def mock_conversation(self):
-        mocked_conversation = MagicMock(Conversation)
-        mocked_conversation.messages = MagicMock(List[Message])
-        append = MagicMock()
-        mocked_conversation.messages.append = append
-        return mocked_conversation
+    async def asyncSetUp(self):
+        await init_mock_database()
 
     async def test_send_message(self):
-        expected = Message(role=Role.ASSISTANT, content=self.mocked_response)
-        mocked_manager = self.mock_manager()
-        mocked_conversation = self.mock_conversation()
-        mocked_client = self.mock_client()
+        mocked_response = "mocked ai response"
+        expected = Message(role=Role.ASSISTANT, content=mocked_response)
+        mocked_manager = AsyncMock(ConversationManager)
+        conversation = Conversation()
 
-        service = OpenAIService(mocked_client, mocked_manager)
-        message = await service.send(prompt="Test", conversation=mocked_conversation)
+        service = OpenAIService(mock_ai(), mocked_manager)
+        message = await service.send(prompt="Test", conversation=conversation)
 
         assert message == expected
-        assert mocked_conversation.messages.append.has_calls([
-            call(Message(role=Role.USER, content="Test")),
-            call(Message(role=Role.ASSISTANT, content=self.mocked_response)),
-        ])
+        assert conversation.messages == [
+            (Message(role=Role.USER, content="Test")),
+            (Message(role=Role.ASSISTANT, content=mocked_response)),
+        ]
         assert mocked_manager.save.called_once
 
 

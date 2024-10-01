@@ -3,9 +3,13 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 from app.database.conversation_manager import ConversationManager
 from app.database.models import Conversation
+from tests.mocks.mock_database import init_mock_database
 
 
 class ConversationManagerTests(unittest.IsolatedAsyncioTestCase):
+
+    async def asyncSetUp(self):
+        await init_mock_database()
 
     @patch('app.database.models.Conversation.find_all')
     async def test_get_conversations_ids(self, mock_find_all):

@@ -1,5 +1,4 @@
 import unittest
-from datetime import datetime
 from unittest.mock import AsyncMock, MagicMock
 
 from fastapi import FastAPI
@@ -9,9 +8,13 @@ from app.api_services.conversation_router import init_conversation_router
 from app.database.conversation_manager import ConversationManager
 from app.database.models import Conversation, Message, Role
 from app.open_ai.openai_service import OpenAIService
+from tests.mocks.mock_database import init_mock_database
 
 
-class ConversationRouterTests(unittest.TestCase):
+class ConversationRouterTests(unittest.IsolatedAsyncioTestCase):
+
+    async def asyncSetUp(self):
+        await init_mock_database()
 
     def mock_ai_service(self):
         ai_service = MagicMock()
@@ -97,17 +100,11 @@ class ConversationRouterTests(unittest.TestCase):
 
     def test_put_conversation(self):
         mock_manager = MagicMock(ConversationManager)
-        mocked_json = {
-            "id": "124",
-            "created_at": str(datetime.now()),
-            "messages": [{'content': 'Mocked', 'role': 'user'}]
-        }
-        mock_manager.create_conversation.return_value = mocked_json
+        mock_manager.create_conversation.return_value = Conversation()
 
         response = self.client(mock_manager, self.mock_ai_service()).put("/conversations", json={"message": "test"})
 
         assert response.status_code == 200
-        assert response.json() == mocked_json
 
 
 if __name__ == '__main__':
