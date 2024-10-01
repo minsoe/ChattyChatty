@@ -13,13 +13,16 @@ class OpenAIServieTests(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
         await init_mock_database()
 
+    async def asyncTearDown(self):
+        await Conversation.get_motor_collection().drop()
+
     async def test_send_message(self):
         mocked_response = "mocked ai response"
         expected = Message(role=Role.ASSISTANT, content=mocked_response)
         mocked_manager = AsyncMock(ConversationManager)
         conversation = Conversation()
-
         service = OpenAIService(mock_ai(), mocked_manager)
+
         message = await service.send(prompt="Test", conversation=conversation)
 
         assert message == expected

@@ -16,6 +16,9 @@ class ConversationRouterTests(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
         await init_mock_database()
 
+    async def asyncTearDown(self):
+        await Conversation.get_motor_collection().drop()
+
     def mock_ai_service(self):
         ai_service = MagicMock()
         ai_service.send = AsyncMock()
