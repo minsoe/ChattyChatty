@@ -9,9 +9,6 @@ ChattyChatty is a backend application written in Python, utilizing FastAPI and M
   - Without Docker
 - Environment Variables
 - Dependencies
-- Folder Structure
-- Contributing
-- Suggestions for Improvement
 
 ## Getting Started
 
@@ -86,25 +83,4 @@ ChattyChatty is a backend application written in Python, utilizing FastAPI and M
 - `motor==3.6.0`
 - `beanie==1.26.0`
 - `fastapi==0.115.0`
-
-## Folder Structure
-```
-- ChattyChatty
- - docker-compose.yml
- - main.py
- - requirements.txt
- - app
-    - api-services
-      - conversation_router.py
-      - prompt.py
-    - database
-      - conversation_manager.py
-      - datbase.py
-      - models.py
-    - open_ai
-      - openai_service.py
-  - tests
-    - conversation_manager_tests.py
-    - conversation_router_tests.py
-    - openai_service_tests.py
-```
+- `mongomock_motor==0.0.34`
