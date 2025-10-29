@@ -13,7 +13,6 @@ authors = [
 
 readme = {file = "README.md", content-type = "text/markdown"}
 
-
 requires-python = "~= 3.11.0"
 
 dependencies = [
@@ -45,30 +44,12 @@ Repository = "https://github.com/minsoe/ChattyChatty.git"
 
 [tool.mypy]
 plugins = ['pydantic.mypy']
-    
-# [tool.pytest.ini_options]
-# addopts = "-v --cov=your_project_name --cov-report term-missing --cov-report=html"
-
-
 
 [tool.pytest.ini_options]
-pythonpath = ["src"]
+pythonpath = ["."]
 addopts = [
     "--import-mode=importlib",
 ]
 python_files = ["test_*.py", "*_test.py", "*_tests.py"]
-
-# [tool.tox]
-# requires = ["tox>=4.19"]
-# env_list = ["3.14t", "3.14", "3.13", "3.12", "type"]
-
-# [tool.tox.env_run_base]
-# description = "Run test under {base_python}"
-# commands = [["pytest"]]
-
-# [tool.tox.env.type]
-# description = "run type check on code base"
-# deps = ["mypy==1.18.2", "types-cachetools>=5.5.0.20240820", "types-chardet>=5.0.4.6"]
-# commands = [["mypy", "src{/}tox"], ["mypy", "tests"]]
 
 
