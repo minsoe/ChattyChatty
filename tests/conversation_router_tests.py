@@ -27,6 +27,12 @@ def get_conversation_ids_client():
     app.dependency_overrides[get_conversation_manager] = (
         get_conversation_ids_mock_manager
     )
+
+    def mock_ai_service():
+        return MagicMock()
+
+    app.dependency_overrides[get_ai_service] = mock_ai_service
+
     app.include_router(conversation_router.router)
     return TestClient(app)
 
@@ -43,6 +49,12 @@ def delete_conversation_client():
     app.dependency_overrides[get_conversation_manager] = (
         delete_conversation_mock_manager
     )
+
+    def mock_ai_service():
+        return MagicMock()
+
+    app.dependency_overrides[get_ai_service] = mock_ai_service
+
     app.include_router(conversation_router.router)
     return TestClient(app)
 
@@ -62,6 +74,12 @@ def delete_conversation_not_found_client():
     app.dependency_overrides[get_conversation_manager] = (
         delete_conversation_not_found_mock_manager
     )
+
+    def mock_ai_service():
+        return MagicMock()
+
+    app.dependency_overrides[get_ai_service] = mock_ai_service
+
     app.include_router(conversation_router.router)
     return TestClient(app)
 
@@ -77,6 +95,12 @@ def get_converstation_client():
         return manager
 
     app.dependency_overrides[get_conversation_manager] = get_conversation_mock_manager
+
+    def mock_ai_service():
+        return MagicMock()
+
+    app.dependency_overrides[get_ai_service] = mock_ai_service
+
     app.include_router(conversation_router.router)
     return TestClient(app)
 
@@ -94,6 +118,12 @@ def converstation_not_found_client():
     app.dependency_overrides[get_conversation_manager] = (
         get_conversation_not_found_mock_manager
     )
+
+    def mock_ai_service():
+        return MagicMock()
+
+    app.dependency_overrides[get_ai_service] = mock_ai_service
+
     app.include_router(conversation_router.router)
     return TestClient(app)
 
