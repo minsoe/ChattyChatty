@@ -44,20 +44,16 @@ ChattyChatty is a backend application written in Python, utilizing FastAPI and M
     cd ChattyChatty
     ```
 
-2. Create a Python virtual environment:
+2. Create a Python virtual environment & install dependencies:
     ```sh
-    python -m venv venv
-    source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+    pip install uv
+    uv sync
+    source .venv/bin/activate  # On Windows use `venv\Scripts\activate`
     ```
 
-3. Install the required dependencies:
+3. Install dev dependencies:
     ```sh
-    pip install -r requirements.txt
-    ```
-
-4. Install FastAPI CLI:
-    ```sh
-    pip install "fastapi[standard]"
+    uv sync --extra dev
     ```
 
 5. Create a `.env` file in the root directory and add the following environment variables:
@@ -68,7 +64,7 @@ ChattyChatty is a backend application written in Python, utilizing FastAPI and M
 
 6. Run the application:
     ```sh
-   fastapi dev main.py
+   fastapi dev src/chattychatty/main.py
     ```
 
 ## Environment Variables

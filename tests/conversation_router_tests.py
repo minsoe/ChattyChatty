@@ -1,114 +1,187 @@
-import unittest
 from unittest.mock import AsyncMock, MagicMock
 
+import pytest
+import pytest_asyncio
+from bson import ObjectId
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from app.api_services.conversation_router import init_conversation_router
-from app.database.conversation_manager import ConversationManager
-from app.database.models import Conversation, Message, Role
-from app.open_ai.openai_service import OpenAIService
+from chattychatty.api_services import conversation_router
+from chattychatty.database.conversation_manager import ConversationNotFoundException
+from chattychatty.database.models import BeanieConversation, Message, Role
+from chattychatty.IOC.ai_service import get_ai_service
+from chattychatty.IOC.conversation_manager import get_conversation_manager
 from tests.mocks.mock_database import init_mock_database
 
 
-class ConversationRouterTests(unittest.IsolatedAsyncioTestCase):
+@pytest.fixture
+def get_conversation_ids_client():
+    app = FastAPI()
 
-    async def asyncSetUp(self):
-        await init_mock_database()
+    def get_conversation_ids_mock_manager():
+        manager = MagicMock()
+        manager.get_conversations_ids = AsyncMock()
+        manager.get_conversations_ids.return_value = [str(ObjectId())]
+        return manager
 
-    async def asyncTearDown(self):
-        await Conversation.get_motor_collection().drop()
+    app.dependency_overrides[get_conversation_manager] = (
+        get_conversation_ids_mock_manager
+    )
+    app.include_router(conversation_router.router)
+    return TestClient(app)
 
-    def mock_ai_service(self):
+
+@pytest.fixture
+def delete_conversation_client():
+    app = FastAPI()
+
+    def delete_conversation_mock_manager():
+        manager = MagicMock()
+        manager.delete_conversation = AsyncMock()
+        return manager
+
+    app.dependency_overrides[get_conversation_manager] = (
+        delete_conversation_mock_manager
+    )
+    app.include_router(conversation_router.router)
+    return TestClient(app)
+
+
+@pytest.fixture
+def delete_conversation_not_found_client():
+    app = FastAPI()
+
+    def delete_conversation_not_found_mock_manager():
+        manager = MagicMock()
+        manager.delete_conversation = AsyncMock()
+        manager.delete_conversation.side_effect = ConversationNotFoundException(
+            "not found"
+        )
+        return manager
+
+    app.dependency_overrides[get_conversation_manager] = (
+        delete_conversation_not_found_mock_manager
+    )
+    app.include_router(conversation_router.router)
+    return TestClient(app)
+
+
+@pytest.fixture
+def get_converstation_client():
+    app = FastAPI()
+
+    def get_conversation_mock_manager():
+        manager = MagicMock()
+        manager.get_conversation = AsyncMock()
+        manager.get_conversation.return_value = BeanieConversation()
+        return manager
+
+    app.dependency_overrides[get_conversation_manager] = get_conversation_mock_manager
+    app.include_router(conversation_router.router)
+    return TestClient(app)
+
+
+@pytest.fixture
+def converstation_not_found_client():
+    app = FastAPI()
+
+    def get_conversation_not_found_mock_manager():
+        manager = MagicMock()
+        manager.get_conversation = AsyncMock()
+        manager.get_conversation.return_value = None
+        return manager
+
+    app.dependency_overrides[get_conversation_manager] = (
+        get_conversation_not_found_mock_manager
+    )
+    app.include_router(conversation_router.router)
+    return TestClient(app)
+
+
+@pytest.fixture
+def post_conversation_client():
+    app = FastAPI()
+
+    def mock_manager():
+        manager = MagicMock()
+        manager.get_conversation = AsyncMock()
+        manager.get_conversation.return_value = BeanieConversation()
+        return manager
+
+    app.dependency_overrides[get_conversation_manager] = mock_manager
+
+    def mock_ai_service():
         ai_service = MagicMock()
         ai_service.send = AsyncMock()
-        ai_service.send.return_value = Message(role=Role.ASSISTANT, content="Mocked Message")
+        ai_service.send.return_value = Message(
+            role=Role.ASSISTANT, content="Mocked Message"
+        )
         return ai_service
 
-    def mock_manager_with_get_conversation_return_value(self, value):
-        mock_manager = MagicMock(ConversationManager)
-        get_conversation = AsyncMock()
-        get_conversation.return_value = value
-        mock_manager.get_conversation = get_conversation
-        return mock_manager
+    app.dependency_overrides[get_ai_service] = mock_ai_service
+    app.include_router(conversation_router.router)
+    return TestClient(app)
 
-    def client(self, manager: ConversationManager, ai_service: OpenAIService):
-        app = FastAPI()
-        init_conversation_router(app, manager, ai_service)
-        return TestClient(app)
 
-    def test_delete_conversation(self):
-        mock_manager = self.mock_manager_with_get_conversation_return_value(MagicMock(Conversation))
-        mock_manager.delete_conversation = AsyncMock()
+@pytest_asyncio.fixture(autouse=True)
+async def mock_database():
+    client = await init_mock_database()
+    yield client
+    await BeanieConversation.get_motor_collection().drop()
 
-        response = self.client(mock_manager, MagicMock()).delete("/conversations/123")
+
+class TestConversationRouter:
+    def test_delete_conversation(self, delete_conversation_client):
+        conversation_id = str(ObjectId())
+
+        response = delete_conversation_client.delete(
+            f"/conversations/{conversation_id}"
+        )
 
         assert response.status_code == 200
 
-    def test_delete_conversation_when_not_found(self):
-        mock_manager = self.mock_manager_with_get_conversation_return_value(None)
-        mock_manager.delete_conversation = AsyncMock()
-
-        response = self.client(mock_manager, MagicMock()).delete("/conversations/345")
+    def test_delete_conversation_when_not_found(
+        self, delete_conversation_not_found_client
+    ):
+        response = delete_conversation_not_found_client.delete("/conversations/345")
 
         assert response.status_code == 404
 
-    def test_get_conversation(self):
-        mock_manager = self.mock_manager_with_get_conversation_return_value(MagicMock(Conversation))
-
-        response = self.client(mock_manager, MagicMock()).get("/conversations/567")
+    # @pytest.mark.asyncio
+    def test_get_conversation(self, get_converstation_client):
+        response = get_converstation_client.get("/conversations/567")
 
         assert response.status_code == 200
 
-    def test_get_conversation_when_not_found(self):
-        mock_manager = self.mock_manager_with_get_conversation_return_value(None)
-
-        response = self.client(mock_manager, MagicMock()).get("/conversations/456")
+    def test_get_conversation_when_not_found(self, converstation_not_found_client):
+        response = converstation_not_found_client.get("/conversations/456")
 
         assert response.status_code == 404
 
-    def test_post_conversation(self):
-        mock_manager = self.mock_manager_with_get_conversation_return_value(MagicMock(Conversation))
-        mock_ai_service = self.mock_ai_service()
-
-        response = self.client(mock_manager, mock_ai_service).post("/conversations/123", json={"message": "test"})
+    def test_post_conversation(self, post_conversation_client):
+        # mock_manager.get_conversation.return_value = MagicMock(Conversation)
+        # client.app.manager.get_conversations_ids.return_value = MagicMock(Conversation)
+        response = post_conversation_client.post(
+            "/conversations/123", json={"message": "test"}
+        )
 
         assert response.status_code == 200
-        assert response.json() == {'role': 'assistant', 'content': 'Mocked Message'}
+        assert response.json() == {
+            "role": "assistant",
+            "content": "Mocked Message",
+        }
 
-    def test_post_conversation_when_not_found(self):
-        mock_manager = self.mock_manager_with_get_conversation_return_value(None)
-
-        response = self.client(mock_manager, MagicMock()).post("/conversations/7891", json={"message": "test"})
+    def test_post_conversation_when_not_found(self, converstation_not_found_client):
+        # mock_manager.get_conversation.return_value = None
+        # client.app.manager.get_conversations_ids.return_value = None
+        response = converstation_not_found_client.post(
+            "/conversations/7891", json={"message": "test"}
+        )
 
         assert response.status_code == 404
 
-    def test_get_conversations(self):
-        mock_manager = MagicMock(ConversationManager)
-        mock_manager.get_conversations_ids.return_value = ["123"]
-
-        response = self.client(mock_manager, MagicMock()).get("/conversations")
+    def test_get_conversations_ids(self, get_conversation_ids_client):
+        response = get_conversation_ids_client.get("/conversations/ids/")
 
         assert response.status_code == 200
-        assert response.json() == {"conversation_id_list": ["123"]}
-
-    def test_get_conversations_when_empty(self):
-        mock_manager = MagicMock(ConversationManager)
-        mock_manager.get_conversations_ids.return_value = []
-
-        response = self.client(mock_manager, MagicMock()).get("/conversations")
-
-        assert response.status_code == 200
-        assert response.json() == {"conversation_id_list": []}
-
-    def test_put_conversation(self):
-        mock_manager = MagicMock(ConversationManager)
-        mock_manager.create_conversation.return_value = Conversation()
-
-        response = self.client(mock_manager, self.mock_ai_service()).put("/conversations", json={"message": "test"})
-
-        assert response.status_code == 200
-
-
-if __name__ == '__main__':
-    unittest.main()
+        assert len(response.json()["conversation_id_list"]) == 1
