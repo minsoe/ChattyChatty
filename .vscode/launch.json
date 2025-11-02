@@ -8,13 +8,10 @@
             "name": "Python Debugger: FastAPI",
             "type": "debugpy",
             "request": "launch",
-            // "module": "uvicorn",
-            "module": "fastapi",
+            "module": "uvicorn",
             "args": [
-                "dev",
-                "chatty_api/src/chatty_api/main.py"
-                // "chatty_api.main:app",
-                // "--reload"
+                "src.chattychatty.main:app",
+                "--reload"
             ],
             "jinja": true
         }

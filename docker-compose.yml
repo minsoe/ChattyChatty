@@ -1,0 +1,30 @@
+services:
+  web:
+    platform: linux/arm64
+    image: python:3.11-slim-buster
+    container_name: fastapi_app
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    command: >
+      sh -c "pip install uv &&
+      cd app &&
+      uv run &&
+      uv pip install "fastapi[standard]" &&
+      fastapi run --workers 4 app/chattychatty/main.py"
+    depends_on:
+      - mongo
+    env_file:
+      - .env
+
+  mongo:
+    image: mongo:7.0
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:

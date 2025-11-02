@@ -65,41 +65,9 @@ ChattyChatty is a backend application written in Python, utilizing FastAPI and M
 6. Run the application:
     ```sh
     docker compose -f docker-compose.mongo.yml up -d #to spin up mongodb locally
-    fastapi dev chatty_api.main:app
+    fastapi dev src/chattychatty/main.py
     ```
 
 ## Environment Variables
 - `OPENAI_API_KEY`: Your OpenAI API key.
 - `MONGODB_URL`: The URL for your MongoDB server.
-
-## Project folder structure 
-├── pyproject.toml
-├── README.md
-├── chatty_api/
-│ ├── pyproject.toml
-│ ├── src/
-│ │ ├── chatty_api/
-│ │ ├── bootstrap/
-│ │ ├── api_services/
-│ │ │ └── models/
-│ │ └── IOC/
-│ └── tests/
-├── chatty_ai/
-│ ├── pyproject.toml
-│ ├── src/
-│ │ └── chatty_ai/
-│ └── tests/
-├── chatty_core/
-│ ├── pyproject.toml
-│ ├── src/
-│ │ └── chatty_core/
-│ │ ├── models/
-│ │ ├── database/
-│ │ └── conversations/
-│ └── tests/
-├── chatty_test_services/
-│ ├── pyproject.toml
-│ ├── src/
-│ │ └── chatty_test_services/
-│ │ └── mocks/
-│ └── tests/
