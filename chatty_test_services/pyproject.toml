@@ -1,0 +1,35 @@
+[build-system]
+requires = ["uv_build>=0.9.5,<0.10.0"]
+build-backend = "uv_build"
+
+[project]
+name = "chatty_test_services"
+version = "0.0.1"
+
+requires-python = "~= 3.11.0"
+
+authors = [
+  {name = "Min Soe Zan"}
+]
+
+dependencies = [
+  "motor~=3.6.0",
+  "beanie~=1.26.0",
+  "mongomock_motor~=0.0.34",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-asyncio",
+    "pytest-tornasync",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+addopts = [
+    "--import-mode=importlib",
+]
+python_files = ["test_*.py", "*_test.py", "*_tests.py"]
+
+#bird-feeder = { path = "packages/bird-feeder" }

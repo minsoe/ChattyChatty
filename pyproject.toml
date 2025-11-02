@@ -1,9 +1,4 @@
-[build-system]
-requires = ["uv_build>=0.9.5,<0.10.0"]
-build-backend = "uv_build"
-
 [project]
-
 name = "chattychatty"
 version = "0.0.1"
 
@@ -13,43 +8,33 @@ authors = [
 
 readme = {file = "README.md", content-type = "text/markdown"}
 
-requires-python = "~= 3.11.0"
-
-dependencies = [
-    "openai~=2.6.1",
-    "pymongo~=4.9.1",
-    "pydantic~=2.9.2",
-    "python-dotenv~=1.0.1",
-    "motor~=3.6.0",
-    "beanie~=1.26.0",
-    "fastapi~=0.120.1",
-    "camel-converter~=4.0.1",
-    # "pydantic-ai~=1.0.5",
-    "typing_inspect~=0.9.0",
-    "fastapi-utils~=0.8.0",
-    "httpx~=0.27.2",
-]
-
-[project.optional-dependencies]
-dev = [
-    "pytest",
-    "pytest-asyncio",
-    "pytest-tornasync",
-    "mongomock_motor~=0.0.34",
-    "fastapi[standard]"
-]
-
 [project.urls]
 Repository = "https://github.com/minsoe/ChattyChatty.git"
 
-[tool.mypy]
-plugins = ['pydantic.mypy']
-
-[tool.pytest.ini_options]
-pythonpath = ["."]
-addopts = [
-    "--import-mode=importlib",
+[tool.uv.workspace]
+members = [
+  "chatty_api", 
+  "chatty_ai", 
+  "chatty_core", 
+  "chatty_test_services"
 ]
-python_files = ["test_*.py", "*_test.py", "*_tests.py"]
 
+[tool.uv.sources]
+chatty_test_services = { workspace = true }
+chatty_core = { workspace = true }
+chatty_ai = {workspace = true }
+#chatty_ai = { path = "chatty_ai" }
 
+[tool.ruff]
+target-version = "py311"
+
+line-length = 88
+preview = false
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+# `E` for Pycodestyle errors
+# `F` for Pyflakes errors
+# `I` for isort (import sorting)
+
+# Ignore specific rules project-wide.
