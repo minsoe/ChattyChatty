@@ -9,7 +9,7 @@ from chatty_core.models import Message, Role
 from chatty_test_services.mocks.mock_database import init_mock_database
 
 
-class ConversationManagerTests(IsolatedAsyncioTestCase):
+class TestConversationManager(IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
         self.client = await init_mock_database([BeanieConversation])
 
@@ -66,7 +66,3 @@ class ConversationManagerTests(IsolatedAsyncioTestCase):
         conversation = await manager.create_conversation()
 
         assert conversation is not None
-
-
-if __name__ == "__main__":
-    unittest.main()

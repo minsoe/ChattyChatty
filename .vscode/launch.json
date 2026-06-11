@@ -12,7 +12,7 @@
             "module": "fastapi",
             "args": [
                 "dev",
-                "chatty_api/src/chatty_api/main.py"
+                "chatty_services/src/chatty_api/main.py"
                 // "chatty_api.main:app",
                 // "--reload"
             ],

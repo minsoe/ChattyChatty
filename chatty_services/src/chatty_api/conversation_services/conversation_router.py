@@ -7,8 +7,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi_utils.cbv import cbv
 
 from chatty_ai import AIService
-from chatty_api.api_services.models.requests import Prompt
-from chatty_api.api_services.models.responses import ConversationIDs
+from chatty_api.conversation_services.models.requests import Prompt
+from chatty_api.conversation_services.models.responses import ConversationIDs
+from chatty_api.IOC.ai_service import get_ai_service
 from chatty_api.IOC.conversation_manager import (
     get_conversation_manager,
 )
@@ -21,7 +22,7 @@ router = APIRouter(prefix="/conversations")
 @cbv(router)
 class ConversationsRouter:
     manager: ConversationManager = Depends(get_conversation_manager)
-    ai_service: AIService = Depends(AIService)
+    ai_service: AIService = Depends(get_ai_service)
 
     @router.post("/{conversation_id}")
     async def send(self, conversation_id: str, prompt: Prompt) -> Message:

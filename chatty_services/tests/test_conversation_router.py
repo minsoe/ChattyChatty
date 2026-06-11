@@ -3,7 +3,7 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 import pytest_asyncio
 from bson import ObjectId
-from chatty_api.api_services import conversation_router
+from chatty_api.conversation_services import conversation_router
 from chatty_api.IOC.ai_service import get_ai_service
 from chatty_api.IOC.conversation_manager import get_conversation_manager
 from chatty_core.conversations.conversation_manager import ConversationNotFoundException

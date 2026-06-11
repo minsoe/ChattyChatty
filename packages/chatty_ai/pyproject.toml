@@ -1,0 +1,27 @@
+[project]
+name = "chatty_ai"
+version = "0.0.1"
+
+authors = [{ name = "Min Soe Zan" }]
+
+requires-python = "~= 3.11.0"
+
+dependencies = ["chatty_core", "openai~=2.6.1"]
+
+[project.optional-dependencies]
+dev = ["pytest", "pytest-asyncio", "pytest-tornasync", "chatty_test_services"]
+
+[build-system]
+requires = ["uv_build>=0.9.5,<0.10.0"]
+build-backend = "uv_build"
+
+[tool.pytest.ini_options]
+addopts = [
+  "--import-mode=importlib",
+]
+python_files = ["test_*.py", "*_test.py", "*_tests.py"]
+pythonpath = ["."]
+
+[tool.uv.sources]
+chatty_test_services = { path = "../chatty_test_services" }
+chatty_core = { path = "../chatty_core" }

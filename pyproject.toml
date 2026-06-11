@@ -2,39 +2,9 @@
 name = "chattychatty"
 version = "0.0.1"
 
-authors = [
-  {name = "Min Soe Zan"}
-]
+authors = [{ name = "Min Soe Zan" }]
 
-readme = {file = "README.md", content-type = "text/markdown"}
+# readme = { file = "README.md", content-type = "text/markdown" }
 
 [project.urls]
 Repository = "https://github.com/minsoe/ChattyChatty.git"
-
-[tool.uv.workspace]
-members = [
-  "chatty_api", 
-  "chatty_ai", 
-  "chatty_core", 
-  "chatty_test_services"
-]
-
-[tool.uv.sources]
-chatty_test_services = { workspace = true }
-chatty_core = { workspace = true }
-chatty_ai = {workspace = true }
-#chatty_ai = { path = "chatty_ai" }
-
-[tool.ruff]
-target-version = "py311"
-
-line-length = 88
-preview = false
-
-[tool.ruff.lint]
-select = ["E", "F", "I"]
-# `E` for Pycodestyle errors
-# `F` for Pyflakes errors
-# `I` for isort (import sorting)
-
-# Ignore specific rules project-wide.

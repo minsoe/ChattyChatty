@@ -27,6 +27,6 @@ class BeanieConversationManager:
             b_conversation: BeanieConversation = conversation
             await b_conversation.save()
 
-    async def create_conversation(self) -> BeanieConversation:
+    async def create_conversation(self) -> Conversation:
         conversation = BeanieConversation()
         return conversation
