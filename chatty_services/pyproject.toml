@@ -1,0 +1,47 @@
+[project]
+name = "chatty_api"
+version = "0.0.1"
+
+authors = [{ name = "Min Soe Zan" }]
+
+# readme = {file = "README.md", content-type = "text/markdown"}
+
+requires-python = "~= 3.11.0"
+
+dependencies = [
+  "chatty_ai",
+  "fastapi~=0.120.1",
+  "fastapi-utils~=0.8.0",
+  "httpx~=0.27.2",
+  "pydantic~=2.9.2",
+  "python-dotenv~=1.0.1",
+  "typing_inspect~=0.9.0"
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest",
+  "pytest-asyncio",
+  "pytest-tornasync",
+  "fastapi[standard]",
+  "chatty_test_services"
+]
+
+[build-system]
+requires = ["uv_build>=0.9.5,<0.10.0"]
+build-backend = "uv_build"
+
+[tool.mypy]
+plugins = ["pydantic.mypy"]
+
+[tool.pytest.ini_options]
+addopts = [
+  "--import-mode=importlib",
+]
+python_files = ["test_*.py", "*_test.py", "*_tests.py"]
+pythonpath = ["."]
+
+[tool.uv.sources]
+chatty_test_services = { path = "../packages/chatty_test_services" }
+chatty_core = { path = "../packages/chatty_core" }
+chatty_ai = { path = "../packages/chatty_ai" }

@@ -1,0 +1,44 @@
+[project]
+name = "chatty_core"
+version = "0.0.1"
+
+authors = [{ name = "Min Soe Zan" }]
+
+requires-python = "~= 3.11.0"
+
+dependencies = [
+  "beanie~=1.26.0",
+  "camel-converter~=4.0.1",
+  "motor~=3.6.0",
+  "pydantic~=2.9.2",
+  "pymongo~=4.9.1",
+  "typing_inspect~=0.9.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "pytest-asyncio", "pytest-tornasync", "chatty_test_services"]
+
+[build-system]
+requires = ["uv_build>=0.9.5,<0.10.0"]
+build-backend = "uv_build"
+
+[tool.mypy]
+plugins = ["pydantic.mypy"]
+
+# [[tool.uv.index]]
+# name = "github"
+# url = "https://test.pypi.org/simple/"
+# publish-url = "https://test.pypi.org/legacy/"
+# url = "https://api.github.com/orgs/minsoe/packages/pypi/upload dist/*"
+# publish-url = "https://test.pypi.org/legacy/"
+# explicit = true
+
+[tool.pytest.ini_options]
+addopts = [
+  "--import-mode=importlib",
+]
+python_files = ["test_*.py", "*_test.py", "*_tests.py"]
+pythonpath = ["."]
+
+[tool.uv.sources]
+chatty_test_services = { path = "../chatty_test_services" }
