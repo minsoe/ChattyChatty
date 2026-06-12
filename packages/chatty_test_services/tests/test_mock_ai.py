@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from chatty_test_services.mocks import mock_ai
 
 

@@ -1,3 +1,5 @@
-from .database import BeanieConversation, init_mongodb
+from __future__ import annotations
 
-__all__ = ["BeanieConversation", "init_mongodb"]
+from .database import BeanieAgent, BeanieConversation, init_mongodb
+
+__all__ = ["BeanieConversation", "BeanieAgent", "init_mongodb"]

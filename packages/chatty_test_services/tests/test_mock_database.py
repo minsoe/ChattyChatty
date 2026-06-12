@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 from beanie import Document
+
 from chatty_test_services.mocks import init_mock_database
 
 

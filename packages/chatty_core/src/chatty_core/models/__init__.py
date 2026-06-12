@@ -1,1 +1,3 @@
-from .models import Conversation, Message, Role
+from __future__ import annotations
+
+from .models import Agent, Conversation, Message, Role

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from chatty_core.conversations.beanie_conversation_manager import (
     BeanieConversationManager,
 )

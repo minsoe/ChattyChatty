@@ -16,10 +16,14 @@ line-length = 88
 preview = false
 
 [tool.ruff.lint]
-select = ["E", "F", "I"]
+select = ["E", "F", "I", "FA"]
 # `E` for Pycodestyle errors
 # `F` for Pyflakes errors
 # `I` for isort (import sorting)
+# `FA` for Enforce from __future__ import annotations
+
+[tool.ruff.lint.isort]
+required-imports = ["from __future__ import annotations"]
 
 # Ignore specific rules project-wide.
 

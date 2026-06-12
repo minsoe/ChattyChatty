@@ -1,0 +1,40 @@
+[project]
+name = "chatty-agent"
+version = "0.1.0"
+requires-python = "~= 3.11.0"
+authors = [{ name = "Min Soe Zan" }]
+
+dependencies = ["chatty_core", "deepagents", "langchain"]
+
+[project.optional-dependencies]
+dev = ["pytest", "pytest-asyncio"]
+
+[build-system]
+requires = ["uv_build>=0.9.5,<0.10.0"]
+build-backend = "uv_build"
+
+[tool.pytest.ini_options]
+addopts = [
+  "--import-mode=importlib",
+]
+python_files = ["test_*.py", "*_test.py", "*_tests.py"]
+pythonpath = ["."]
+
+[tool.ruff]
+target-version = "py311"
+
+line-length = 88
+preview = false
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "FA"]
+# `E` for Pycodestyle errors
+# `F` for Pyflakes errors
+# `I` for isort (import sorting)
+# `FA` for Enforce from __future__ import annotations
+
+[tool.ruff.lint.isort]
+required-imports = ["from __future__ import annotations"]
+
+[tool.uv.sources]
+chatty_core = { path = "../chatty_core" }

@@ -1,6 +1,6 @@
 [project]
 name = "chatty_core"
-version = "0.0.1"
+version = "0.0.2"
 
 authors = [{ name = "Min Soe Zan" }]
 
@@ -39,6 +39,22 @@ addopts = [
 ]
 python_files = ["test_*.py", "*_test.py", "*_tests.py"]
 pythonpath = ["."]
+
+[tool.ruff]
+target-version = "py311"
+
+line-length = 88
+preview = false
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "FA"]
+# `E` for Pycodestyle errors
+# `F` for Pyflakes errors
+# `I` for isort (import sorting)
+# `FA` for Enforce from __future__ import annotations
+
+[tool.ruff.lint.isort]
+required-imports = ["from __future__ import annotations"]
 
 [tool.uv.sources]
 chatty_test_services = { path = "../chatty_test_services" }

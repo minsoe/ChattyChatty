@@ -31,3 +31,19 @@ python_files = ["test_*.py", "*_test.py", "*_tests.py"]
 pythonpath = ["."]
 
 # bird-feeder = { path = "packages/bird-feeder" }
+
+[tool.ruff]
+target-version = "py311"
+
+line-length = 88
+preview = false
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "FA"]
+# `E` for Pycodestyle errors
+# `F` for Pyflakes errors
+# `I` for isort (import sorting)
+# `FA` for Enforce from __future__ import annotations
+
+[tool.ruff.lint.isort]
+required-imports = ["from __future__ import annotations"]

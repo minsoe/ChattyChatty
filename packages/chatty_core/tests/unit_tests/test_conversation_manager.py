@@ -1,12 +1,14 @@
-import unittest
+from __future__ import annotations
+
 from unittest import IsolatedAsyncioTestCase
+
+from chatty_test_services.mocks.mock_database import init_mock_database
 
 from chatty_core.conversations.beanie_conversation_manager import (
     BeanieConversationManager,
 )
 from chatty_core.database import BeanieConversation
 from chatty_core.models import Message, Role
-from chatty_test_services.mocks.mock_database import init_mock_database
 
 
 class TestConversationManager(IsolatedAsyncioTestCase):

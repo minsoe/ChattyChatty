@@ -1,10 +1,12 @@
+from __future__ import annotations
+
 from datetime import datetime
 from enum import Enum
 from typing import List
 
 from pydantic import BaseModel, ConfigDict, Field
 
-__all__ = ["Role", "Message", "Conversation"]
+__all__ = ["Role", "Message", "Conversation", "Agent"]
 
 
 class Role(Enum):
@@ -33,3 +35,10 @@ class Message(ChattyBaseModel):
 class Conversation(ChattyBaseModel):
     created_at: datetime = Field(default_factory=datetime.now)
     messages: List[Message] = Field(default_factory=lambda: [])
+    agent_id: str | None = None
+
+
+class Agent(ChattyBaseModel):
+    model: str
+    system_prompt: str
+    tools: List[str] = []

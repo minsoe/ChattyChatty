@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from enum import StrEnum
 
 from chatty_core.models import Conversation, Message, Role

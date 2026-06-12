@@ -1,3 +1,8 @@
+from __future__ import annotations
+
+from chatty_agent import AgentService
+from chatty_ai import AIService
+from chatty_core.agents import AgentManager
 from chatty_core.conversations.conversation_manager import (
     ConversationManager,
     ConversationNotFoundException,
@@ -6,9 +11,10 @@ from chatty_core.models import Conversation, Message
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi_utils.cbv import cbv
 
-from chatty_ai import AIService
 from chatty_api.conversation_services.models.requests import Prompt
 from chatty_api.conversation_services.models.responses import ConversationIDs
+from chatty_api.IOC.agent_manager import get_agent_manager
+from chatty_api.IOC.agent_service import get_agent_service
 from chatty_api.IOC.ai_service import get_ai_service
 from chatty_api.IOC.conversation_manager import (
     get_conversation_manager,
@@ -23,6 +29,8 @@ router = APIRouter(prefix="/conversations")
 class ConversationsRouter:
     manager: ConversationManager = Depends(get_conversation_manager)
     ai_service: AIService = Depends(get_ai_service)
+    agent_manager: AgentManager = Depends(get_agent_manager)
+    agent_service: AgentService = Depends(get_agent_service)
 
     @router.post("/{conversation_id}")
     async def send(self, conversation_id: str, prompt: Prompt) -> Message:
@@ -34,9 +42,21 @@ class ConversationsRouter:
         if conversation is None:
             raise HTTPException(404, detail="Conversation not found")
 
-        message = await self.ai_service.send(
-            prompt=prompt.message, conversation=conversation
-        )
+        if conversation.agent_id:
+            agent_config = await self.agent_manager.get_agent(conversation.agent_id)
+            if agent_config is None:
+                raise HTTPException(404, detail="Agent not found")
+            message = await self.agent_service.run_agent(
+                agent_config=agent_config,
+                conversation=conversation,
+                prompt=prompt.message,
+            )
+        else:
+            message = await self.ai_service.send(
+                prompt=prompt.message, conversation=conversation
+            )
+
+        await self.manager.save(conversation)
         return message
 
     @router.delete("/{conversation_id}")
@@ -73,11 +93,25 @@ class ConversationsRouter:
         return ConversationIDs(conversation_id_list=conversations)
 
     @router.post("/")
-    async def create_conversation(self, prompt: Prompt):
+    async def create_conversation(self, prompt: Prompt) -> Conversation:
         """
         Create a new conversation with a starting message
         """
         conversation = await self.manager.create_conversation()
-        received = await self.ai_service.send(prompt.message, conversation)
-        await self.manager.save(received)
+        if prompt.agent_id:
+            conversation.agent_id = prompt.agent_id
+
+        if conversation.agent_id:
+            agent_config = await self.agent_manager.get_agent(conversation.agent_id)
+            if agent_config is None:
+                raise HTTPException(404, detail="Agent not found")
+            await self.agent_service.run_agent(
+                agent_config=agent_config,
+                conversation=conversation,
+                prompt=prompt.message,
+            )
+        else:
+            await self.ai_service.send(prompt.message, conversation)
+
+        await self.manager.save(conversation)
         return conversation
